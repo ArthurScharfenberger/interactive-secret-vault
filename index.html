@@ -3,17 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
   <title>Cofre Secreto</title>
-
   <link rel="stylesheet" href="style.css" />
-
-  <link
-    rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
-  />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
 </head>
-
 <body>
   <div class="background-glow"></div>
 
@@ -86,15 +79,12 @@
         <button class="key" data-number="1" aria-label="Número 1">1</button>
         <button class="key" data-number="2" aria-label="Número 2">2</button>
         <button class="key" data-number="3" aria-label="Número 3">3</button>
-
         <button class="key" data-number="4" aria-label="Número 4">4</button>
         <button class="key" data-number="5" aria-label="Número 5">5</button>
         <button class="key" data-number="6" aria-label="Número 6">6</button>
-
         <button class="key" data-number="7" aria-label="Número 7">7</button>
         <button class="key" data-number="8" aria-label="Número 8">8</button>
         <button class="key" data-number="9" aria-label="Número 9">9</button>
-
         <button class="key zero" data-number="0" aria-label="Número 0">0</button>
       </section>
 
@@ -108,11 +98,13 @@
         <span>Reiniciar Cofre</span>
       </button>
 
+      <button class="hint-button" id="hintButton">
+        <i class="fa-solid fa-circle-question"></i>
+        <span>Não sabe a senha?</span>
+      </button>
+
       <div class="money-box" id="moneyBox"></div>
       <div class="piggy-box" id="piggyBox"></div>
-      <div class="money-rain-box" id="moneyRainBox"></div>
-
-      <audio id="successMusic" src="assets/happy-nation.mp3" loop></audio>
     </section>
   </main>
 
@@ -126,7 +118,6 @@
       </div>
 
       <h2>Cofre Bloqueado</h2>
-
       <p>Muitas tentativas incorretas foram detectadas.</p>
 
       <div class="countdown">
@@ -134,6 +125,117 @@
       </div>
     </div>
   </section>
+
+  <section class="riddle-modal" id="riddleModal" aria-live="polite">
+    <div class="riddle-content">
+      <button class="close-riddle" id="closeRiddleButton" aria-label="Fechar enigmas">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+
+      <div class="riddle-header">
+        <div class="riddle-icon">
+          <i class="fa-solid fa-brain"></i>
+        </div>
+
+        <h2>Enigma do Cofre</h2>
+        <p>Resolva os enigmas para descobrir a senha.</p>
+      </div>
+
+      <div class="riddle-progress" id="riddleProgress">
+        <span class="progress-step active">1</span>
+        <span class="progress-line"></span>
+        <span class="progress-step">2</span>
+        <span class="progress-line"></span>
+        <span class="progress-step">3</span>
+        <span class="progress-line"></span>
+        <span class="progress-step">4</span>
+        <span class="progress-line"></span>
+        <span class="progress-step final">?</span>
+      </div>
+
+      <article class="riddle-step active" data-step="0">
+        <span class="riddle-badge">Enigma 1</span>
+        <h3>Primeiro fragmento</h3>
+        <p class="riddle-question">√16 - 2</p>
+        <p class="riddle-description">Resolva a expressão e guarde o resultado.</p>
+      </article>
+
+      <article class="riddle-step" data-step="1">
+        <span class="riddle-badge">Enigma 2</span>
+        <h3>Segundo fragmento</h3>
+        <p class="riddle-question">(8 ÷ 4) - 2</p>
+        <p class="riddle-description">Resolva a expressão e guarde o resultado.</p>
+      </article>
+
+      <article class="riddle-step" data-step="2">
+        <span class="riddle-badge">Enigma 3</span>
+        <h3>Terceiro fragmento</h3>
+        <p class="riddle-question">(3² - 5) ÷ 2</p>
+        <p class="riddle-description">Resolva a expressão e guarde o resultado.</p>
+      </article>
+
+      <article class="riddle-step" data-step="3">
+        <span class="riddle-badge">Enigma 4</span>
+        <h3>Quarto fragmento</h3>
+        <p class="riddle-question">(2³ + 4) ÷ 2</p>
+        <p class="riddle-description">Resolva a expressão e guarde o resultado.</p>
+      </article>
+
+      <article class="riddle-step final-step" data-step="4">
+        <span class="riddle-badge final">Enigma Final</span>
+        <h3>A chave escondida</h3>
+
+        <p class="final-riddle-text">
+          Quatro respostas foram encontradas.
+        </p>
+
+        <p class="final-riddle-text">
+          Elas não são apenas resultados. São partes de uma única chave.
+        </p>
+
+        <p class="final-riddle-text">
+          Una os números na ordem dos enigmas e o cofre revelará seu segredo.
+        </p>
+      </article>
+
+      <div class="answer-card">
+        <label for="riddleAnswerInput" id="answerLabel">Resposta do enigma</label>
+
+        <div class="answer-input-wrap">
+          <i class="fa-solid fa-key"></i>
+          <input
+            type="text"
+            id="riddleAnswerInput"
+            inputmode="numeric"
+            autocomplete="off"
+            placeholder="Digite sua resposta"
+          />
+        </div>
+      </div>
+
+      <p class="riddle-feedback" id="riddleFeedback"></p>
+
+      <div class="riddle-actions">
+        <button class="secondary-riddle-button" id="previousRiddleButton">
+          <i class="fa-solid fa-arrow-left"></i>
+          <span>Voltar</span>
+        </button>
+
+        <button class="check-riddle-button" id="checkRiddleButton">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <span>Verificar</span>
+        </button>
+
+        <button class="next-riddle-button" id="nextRiddleButton">
+          <span>Próximo</span>
+          <i class="fa-solid fa-arrow-right"></i>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <div class="money-rain-box" id="moneyRainBox"></div>
+  <audio id="successMusic" src="assets/happy-nation.mp3" loop></audio>
 
   <script src="script.js"></script>
 </body>

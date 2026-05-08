@@ -6,6 +6,10 @@ let isLocked = false;
 let isSoundEnabled = true;
 let countdownInterval = null;
 let moneyRainInterval = null;
+let currentRiddleStep = 0;
+let riddleSolvedSteps = [false, false, false, false, false];
+
+const riddleAnswers = ["2", "0", "2", "6", correctCode];
 
 const keys = document.querySelectorAll(".key");
 const slots = document.querySelectorAll(".code-slot");
@@ -21,9 +25,22 @@ const countdownText = document.getElementById("countdownText");
 const moneyBox = document.getElementById("moneyBox");
 const piggyBox = document.getElementById("piggyBox");
 const moneyRainBox = document.getElementById("moneyRainBox");
+const successMusic = document.getElementById("successMusic");
 const keyboardInput = document.getElementById("keyboardInput");
 const attemptDots = document.querySelectorAll(".attempt-dot");
-const successMusic = document.getElementById("successMusic");
+
+const hintButton = document.getElementById("hintButton");
+const riddleModal = document.getElementById("riddleModal");
+const closeRiddleButton = document.getElementById("closeRiddleButton");
+const previousRiddleButton = document.getElementById("previousRiddleButton");
+const checkRiddleButton = document.getElementById("checkRiddleButton");
+const nextRiddleButton = document.getElementById("nextRiddleButton");
+const riddleSteps = document.querySelectorAll(".riddle-step");
+const progressSteps = document.querySelectorAll(".progress-step");
+const progressLines = document.querySelectorAll(".progress-line");
+const riddleAnswerInput = document.getElementById("riddleAnswerInput");
+const riddleFeedback = document.getElementById("riddleFeedback");
+const answerLabel = document.getElementById("answerLabel");
 
 let audioContext = null;
 
@@ -35,13 +52,13 @@ function getAudioContext() {
   return audioContext;
 }
 
+// Aqui eu crio sons simples com JavaScript, sem precisar de arquivos de áudio
 function playTone(frequency, duration, type = "sine", volume = 0.08) {
   if (!isSoundEnabled) {
     return;
   }
 
   const context = getAudioContext();
-
   const oscillator = context.createOscillator();
   const gain = context.createGain();
 
@@ -102,28 +119,6 @@ function playResetSound() {
   setTimeout(() => {
     playTone(390, 0.08, "triangle", 0.05);
   }, 90);
-}
-
-function startSuccessMusic() {
-  if (!isSoundEnabled || !successMusic) {
-    return;
-  }
-
-  successMusic.currentTime = 0;
-  successMusic.volume = 0.55;
-
-  successMusic.play().catch(() => {
-    showMessage("Cofre aberto! O navegador bloqueou a música automática.", "success");
-  });
-}
-
-function stopSuccessMusic() {
-  if (!successMusic) {
-    return;
-  }
-
-  successMusic.pause();
-  successMusic.currentTime = 0;
 }
 
 function updateDisplay() {
@@ -223,11 +218,12 @@ function toggleSound() {
     isSoundEnabled ? "Som ativado" : "Som desativado"
   );
 
-  if (isSoundEnabled) {
-    playTone(660, 0.08, "sine", 0.05);
-  } else {
+  if (!isSoundEnabled) {
     stopSuccessMusic();
+    return;
   }
+
+  playTone(660, 0.08, "sine", 0.05);
 }
 
 function typeNumber(number) {
@@ -371,6 +367,28 @@ function createPiggyAnimation() {
   }, 2800);
 }
 
+function startSuccessMusic() {
+  if (!isSoundEnabled || !successMusic) {
+    return;
+  }
+
+  successMusic.currentTime = 0;
+  successMusic.volume = 0.55;
+
+  successMusic.play().catch(() => {
+    showMessage("Cofre aberto! O navegador bloqueou a música automática.", "success");
+  });
+}
+
+function stopSuccessMusic() {
+  if (!successMusic) {
+    return;
+  }
+
+  successMusic.pause();
+  successMusic.currentTime = 0;
+}
+
 function createMoneyRainDrop() {
   const money = document.createElement("span");
 
@@ -393,7 +411,7 @@ function createMoneyRainDrop() {
 }
 
 function startMoneyRain() {
-  stopMoneyRain();
+  moneyRainBox.innerHTML = "";
 
   for (let i = 0; i < 24; i++) {
     setTimeout(() => {
@@ -411,7 +429,6 @@ function startMoneyRain() {
 function stopMoneyRain() {
   clearInterval(moneyRainInterval);
   moneyRainInterval = null;
-
   moneyRainBox.innerHTML = "";
 }
 
@@ -497,10 +514,176 @@ function resetSafe() {
   setButtonsDisabled(false);
   updateDisplay();
   updateAttempts();
+  resetRiddleModal();
 
   showMessage("Cofre reiniciado. Digite o código.", "warning");
   playResetSound();
   focusMobileKeyboard();
+}
+
+function openRiddleModal() {
+  riddleModal.classList.add("active");
+  currentRiddleStep = 0;
+  updateRiddleView();
+  showRiddleFeedback("Resolva o primeiro enigma para continuar.", "");
+
+  setTimeout(() => {
+    riddleAnswerInput.focus();
+  }, 120);
+}
+
+function closeRiddleModal() {
+  riddleModal.classList.remove("active");
+}
+
+function showRiddleFeedback(text, type = "") {
+  riddleFeedback.textContent = text;
+  riddleFeedback.className = "riddle-feedback";
+
+  if (type) {
+    riddleFeedback.classList.add(type);
+  }
+}
+
+function updateRiddleProgress() {
+  progressSteps.forEach((step, index) => {
+    step.classList.remove("active", "done");
+
+    if (riddleSolvedSteps[index]) {
+      step.classList.add("done");
+    }
+
+    if (index === currentRiddleStep) {
+      step.classList.add("active");
+    }
+  });
+
+  progressLines.forEach((line, index) => {
+    line.classList.toggle("done", riddleSolvedSteps[index]);
+  });
+}
+
+function updateRiddleView() {
+  riddleSteps.forEach((step, index) => {
+    step.classList.toggle("active", index === currentRiddleStep);
+  });
+
+  const isFinalStep = currentRiddleStep === riddleAnswers.length - 1;
+
+  answerLabel.textContent = isFinalStep ? "Senha descoberta" : "Resposta do enigma";
+  riddleAnswerInput.value = "";
+  riddleAnswerInput.className = "";
+  riddleAnswerInput.maxLength = isFinalStep ? 4 : 2;
+  riddleAnswerInput.placeholder = isFinalStep ? "Digite a chave final" : "Digite sua resposta";
+
+  previousRiddleButton.disabled = currentRiddleStep === 0;
+  nextRiddleButton.disabled = !riddleSolvedSteps[currentRiddleStep];
+
+  checkRiddleButton.innerHTML = isFinalStep
+    ? '<i class="fa-solid fa-key"></i><span>Confirmar</span>'
+    : '<i class="fa-solid fa-magnifying-glass"></i><span>Verificar</span>';
+
+  nextRiddleButton.innerHTML = isFinalStep
+    ? '<span>Fechar</span><i class="fa-solid fa-check"></i>'
+    : '<span>Próximo</span><i class="fa-solid fa-arrow-right"></i>';
+
+  updateRiddleProgress();
+}
+
+function checkCurrentRiddle() {
+  const answer = riddleAnswerInput.value.trim();
+  const correctAnswer = riddleAnswers[currentRiddleStep];
+  const isFinalStep = currentRiddleStep === riddleAnswers.length - 1;
+
+  riddleAnswerInput.classList.remove("correct", "wrong");
+
+  if (answer !== correctAnswer) {
+    riddleAnswerInput.classList.add("wrong");
+
+    showRiddleFeedback(
+      isFinalStep
+        ? "Ainda não é essa a chave final. Pense na ordem dos enigmas."
+        : "Resposta incorreta. Revise o cálculo e tente novamente.",
+      "error"
+    );
+
+    playErrorSound();
+    return;
+  }
+
+  riddleSolvedSteps[currentRiddleStep] = true;
+  riddleAnswerInput.classList.add("correct");
+  nextRiddleButton.disabled = false;
+
+  if (isFinalStep) {
+    typedCode = correctCode;
+    updateDisplay();
+    showMessage("Senha descoberta. Digite o código no cofre.", "success");
+    showRiddleFeedback("Senha descoberta: 2026. Agora volte ao cofre e destrave.", "success");
+    playSuccessSound();
+
+    setTimeout(() => {
+      closeRiddleModal();
+    }, 1400);
+
+    updateRiddleProgress();
+    return;
+  }
+
+  showRiddleFeedback("Resposta correta. O próximo enigma foi liberado.", "success");
+  playSuccessSound();
+  updateRiddleProgress();
+}
+
+function goToNextRiddle() {
+  if (!riddleSolvedSteps[currentRiddleStep]) {
+    showRiddleFeedback("Verifique a resposta antes de avançar.", "warning");
+    return;
+  }
+
+  if (currentRiddleStep === riddleAnswers.length - 1) {
+    closeRiddleModal();
+    return;
+  }
+
+  currentRiddleStep++;
+  updateRiddleView();
+
+  const isFinalStep = currentRiddleStep === riddleAnswers.length - 1;
+
+  showRiddleFeedback(
+    isFinalStep
+      ? "Enigma final desbloqueado. Descubra a chave completa."
+      : `Enigma ${currentRiddleStep + 1} liberado.`,
+    isFinalStep ? "success" : ""
+  );
+
+  setTimeout(() => {
+    riddleAnswerInput.focus();
+  }, 80);
+}
+
+function goToPreviousRiddle() {
+  if (currentRiddleStep === 0) {
+    return;
+  }
+
+  currentRiddleStep--;
+  updateRiddleView();
+  showRiddleFeedback("Você voltou para o enigma anterior.", "warning");
+
+  setTimeout(() => {
+    riddleAnswerInput.focus();
+  }, 80);
+}
+
+function resetRiddleModal() {
+  currentRiddleStep = 0;
+  riddleSolvedSteps = [false, false, false, false, false];
+  riddleAnswerInput.value = "";
+  riddleAnswerInput.className = "";
+  showRiddleFeedback("", "");
+  updateRiddleView();
 }
 
 keys.forEach((key) => {
@@ -518,11 +701,36 @@ openButton.addEventListener("click", () => {
 });
 
 resetButton.addEventListener("click", resetSafe);
-
 soundButton.addEventListener("click", toggleSound);
+hintButton.addEventListener("click", openRiddleModal);
+closeRiddleButton.addEventListener("click", closeRiddleModal);
+previousRiddleButton.addEventListener("click", goToPreviousRiddle);
+checkRiddleButton.addEventListener("click", checkCurrentRiddle);
+nextRiddleButton.addEventListener("click", goToNextRiddle);
+
+riddleModal.addEventListener("click", (event) => {
+  if (event.target === riddleModal) {
+    closeRiddleModal();
+  }
+});
+
+riddleAnswerInput.addEventListener("input", () => {
+  const limit = currentRiddleStep === riddleAnswers.length - 1 ? 4 : 2;
+  riddleAnswerInput.value = riddleAnswerInput.value.replace(/\D/g, "").slice(0, limit);
+  riddleAnswerInput.classList.remove("correct", "wrong");
+});
+
+riddleAnswerInput.addEventListener("keydown", (event) => {
+  if (event.key === "Enter") {
+    event.preventDefault();
+    checkCurrentRiddle();
+  }
+});
 
 document.addEventListener("keydown", (event) => {
-  if (event.target === keyboardInput) {
+  const target = event.target;
+
+  if (target === keyboardInput || target === riddleAnswerInput) {
     return;
   }
 
@@ -582,3 +790,4 @@ safeCard.addEventListener("click", () => {
 
 updateDisplay();
 updateAttempts();
+updateRiddleView();
