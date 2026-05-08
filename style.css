@@ -47,16 +47,6 @@ body {
   to { transform: translateY(38px); }
 }
 
-.keyboard-input {
-  position: fixed;
-  left: -9999px;
-  top: 0;
-  width: 1px;
-  height: 1px;
-  opacity: 0;
-  pointer-events: none;
-}
-
 .page {
   min-height: 100dvh;
   display: grid;

@@ -26,7 +26,6 @@ const moneyBox = document.getElementById("moneyBox");
 const piggyBox = document.getElementById("piggyBox");
 const moneyRainBox = document.getElementById("moneyRainBox");
 const successMusic = document.getElementById("successMusic");
-const keyboardInput = document.getElementById("keyboardInput");
 const attemptDots = document.querySelectorAll(".attempt-dot");
 
 const hintButton = document.getElementById("hintButton");
@@ -128,8 +127,6 @@ function updateDisplay() {
     slot.textContent = digit ? "•" : "";
     slot.classList.toggle("filled", Boolean(digit));
   });
-
-  keyboardInput.value = typedCode;
 }
 
 function showMessage(text, type = "") {
@@ -196,13 +193,6 @@ function animateKeyClick(key) {
   }, 10);
 }
 
-function focusMobileKeyboard() {
-  if (!keyboardInput || isLocked) {
-    return;
-  }
-
-  keyboardInput.focus();
-}
 
 function toggleSound() {
   isSoundEnabled = !isSoundEnabled;
@@ -303,7 +293,6 @@ function unlockSafeAfterCooldown() {
   updateAttempts();
 
   showMessage("Cofre liberado. Tente novamente.", "warning");
-  focusMobileKeyboard();
 }
 
 function createMoneyAnimation() {
@@ -518,7 +507,6 @@ function resetSafe() {
 
   showMessage("Cofre reiniciado. Digite o código.", "warning");
   playResetSound();
-  focusMobileKeyboard();
 }
 
 function openRiddleModal() {
@@ -690,13 +678,11 @@ keys.forEach((key) => {
   key.addEventListener("click", () => {
     const number = key.dataset.number;
 
-    focusMobileKeyboard();
     typeNumber(number);
   });
 });
 
 openButton.addEventListener("click", () => {
-  focusMobileKeyboard();
   validateCode();
 });
 
@@ -730,7 +716,7 @@ riddleAnswerInput.addEventListener("keydown", (event) => {
 document.addEventListener("keydown", (event) => {
   const target = event.target;
 
-  if (target === keyboardInput || target === riddleAnswerInput) {
+  if (target === riddleAnswerInput) {
     return;
   }
 
@@ -765,28 +751,7 @@ document.addEventListener("keydown", (event) => {
   }
 });
 
-keyboardInput.addEventListener("input", () => {
-  if (isLocked) {
-    keyboardInput.value = "";
-    return;
-  }
 
-  const onlyNumbers = keyboardInput.value.replace(/\D/g, "").slice(0, 4);
-
-  typedCode = onlyNumbers;
-  updateDisplay();
-
-  if (typedCode.length === 4) {
-    showMessage("Código completo. Toque em destravar.", "warning");
-    return;
-  }
-
-  showMessage("Digitando código...", "");
-});
-
-safeCard.addEventListener("click", () => {
-  focusMobileKeyboard();
-});
 
 updateDisplay();
 updateAttempts();
