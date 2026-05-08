@@ -7,75 +7,127 @@
   <title>Cofre Secreto</title>
 
   <link rel="stylesheet" href="style.css" />
+
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+  />
 </head>
 
 <body>
   <div class="background-glow"></div>
 
+  <input
+    type="text"
+    id="keyboardInput"
+    class="keyboard-input"
+    inputmode="numeric"
+    autocomplete="off"
+    maxlength="4"
+    aria-label="Digite o código do cofre"
+  />
+
   <main class="page">
-    <section class="safe-card" id="safeCard">
+    <section class="safe-card" id="safeCard" aria-label="Cofre Secreto">
       <div class="safe-light"></div>
 
+      <button class="sound-button" id="soundButton" aria-label="Ativar ou desativar som">
+        <i class="fa-solid fa-volume-high"></i>
+      </button>
+
       <header class="header">
-        <div class="vault-icon" id="vaultIcon">
-          <span class="vault-door-icon">◉</span>
+        <div class="vault" id="vaultIcon" aria-hidden="true">
+          <div class="vault-back">
+            <i class="fa-solid fa-sack-dollar"></i>
+          </div>
+
+          <div class="vault-door">
+            <div class="vault-hinge"></div>
+
+            <div class="vault-wheel">
+              <i class="fa-solid fa-lock"></i>
+            </div>
+          </div>
         </div>
 
         <h1>Cofre Secreto</h1>
-        <p class="subtitle">Digite o código de 4 dígitos para destravar o cofre.</p>
+
+        <p class="subtitle">
+          Digite o código de 4 dígitos para destravar o cofre.
+        </p>
       </header>
 
       <section class="display-area">
-        <div class="code-display" id="codeDisplay">
+        <div class="code-display" id="codeDisplay" aria-label="Código digitado">
           <div class="code-slot"></div>
           <div class="code-slot"></div>
           <div class="code-slot"></div>
           <div class="code-slot"></div>
         </div>
 
-        <p class="message" id="message">Aguardando código...</p>
-
-        <p class="attempts" id="attemptsText">
-          Tentativas restantes: <strong>3</strong>
+        <p class="message" id="message" aria-live="polite">
+          Aguardando código...
         </p>
+
+        <div class="attempt-panel">
+          <p class="attempts" id="attemptsText">
+            Tentativas restantes: <strong>3</strong>
+          </p>
+
+          <div class="attempt-dots" id="attemptDots" aria-label="Indicador de erros">
+            <span class="attempt-dot">X</span>
+            <span class="attempt-dot">X</span>
+            <span class="attempt-dot">X</span>
+          </div>
+        </div>
       </section>
 
-      <section class="keyboard" id="keyboard">
-        <button class="key" data-number="1">1</button>
-        <button class="key" data-number="2">2</button>
-        <button class="key" data-number="3">3</button>
+      <section class="keyboard" id="keyboard" aria-label="Teclado numérico do cofre">
+        <button class="key" data-number="1" aria-label="Número 1">1</button>
+        <button class="key" data-number="2" aria-label="Número 2">2</button>
+        <button class="key" data-number="3" aria-label="Número 3">3</button>
 
-        <button class="key" data-number="4">4</button>
-        <button class="key" data-number="5">5</button>
-        <button class="key" data-number="6">6</button>
+        <button class="key" data-number="4" aria-label="Número 4">4</button>
+        <button class="key" data-number="5" aria-label="Número 5">5</button>
+        <button class="key" data-number="6" aria-label="Número 6">6</button>
 
-        <button class="key" data-number="7">7</button>
-        <button class="key" data-number="8">8</button>
-        <button class="key" data-number="9">9</button>
+        <button class="key" data-number="7" aria-label="Número 7">7</button>
+        <button class="key" data-number="8" aria-label="Número 8">8</button>
+        <button class="key" data-number="9" aria-label="Número 9">9</button>
 
-        <button class="key zero" data-number="0">0</button>
+        <button class="key zero" data-number="0" aria-label="Número 0">0</button>
       </section>
 
-      <button class="open-button" id="openButton">
+      <button class="open-button" id="openButton" aria-label="Destravar cofre">
+        <i class="fa-solid fa-unlock-keyhole"></i>
         <span>Destravar Cofre</span>
       </button>
 
+      <button class="reset-button" id="resetButton">
+        <i class="fa-solid fa-rotate-right"></i>
+        <span>Reiniciar Cofre</span>
+      </button>
+
       <div class="money-box" id="moneyBox"></div>
+      <div class="piggy-box" id="piggyBox"></div>
+      <div class="money-rain-box" id="moneyRainBox"></div>
+
+      <audio id="successMusic" src="assets/happy-nation.mp3" loop></audio>
     </section>
   </main>
 
-  <section class="lock-screen" id="lockScreen">
+  <section class="lock-screen" id="lockScreen" aria-live="assertive">
     <div class="siren siren-left"></div>
     <div class="siren siren-right"></div>
 
     <div class="lock-content">
-      <div class="big-lock">⛔</div>
+      <div class="big-lock">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+      </div>
 
       <h2>Cofre Bloqueado</h2>
 
-      <p>
-        Muitas tentativas incorretas foram detectadas.
-      </p>
+      <p>Muitas tentativas incorretas foram detectadas.</p>
 
       <div class="countdown">
         Aguarde <strong id="countdownText">15</strong>s
