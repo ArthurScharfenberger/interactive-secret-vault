@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Cofre Secreto</title>
+
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+  <div class="background-glow"></div>
+
+  <main class="page">
+    <section class="safe-card" id="safeCard">
+      <div class="safe-light"></div>
+
+      <header class="header">
+        <div class="vault-icon" id="vaultIcon">
+          <span class="vault-door-icon">◉</span>
+        </div>
+
+        <h1>Cofre Secreto</h1>
+        <p class="subtitle">Digite o código de 4 dígitos para destravar o cofre.</p>
+      </header>
+
+      <section class="display-area">
+        <div class="code-display" id="codeDisplay">
+          <div class="code-slot"></div>
+          <div class="code-slot"></div>
+          <div class="code-slot"></div>
+          <div class="code-slot"></div>
+        </div>
+
+        <p class="message" id="message">Aguardando código...</p>
+
+        <p class="attempts" id="attemptsText">
+          Tentativas restantes: <strong>3</strong>
+        </p>
+      </section>
+
+      <section class="keyboard" id="keyboard">
+        <button class="key" data-number="1">1</button>
+        <button class="key" data-number="2">2</button>
+        <button class="key" data-number="3">3</button>
+
+        <button class="key" data-number="4">4</button>
+        <button class="key" data-number="5">5</button>
+        <button class="key" data-number="6">6</button>
+
+        <button class="key" data-number="7">7</button>
+        <button class="key" data-number="8">8</button>
+        <button class="key" data-number="9">9</button>
+
+        <button class="key zero" data-number="0">0</button>
+      </section>
+
+      <button class="open-button" id="openButton">
+        <span>Destravar Cofre</span>
+      </button>
+
+      <div class="money-box" id="moneyBox"></div>
+    </section>
+  </main>
+
+  <section class="lock-screen" id="lockScreen">
+    <div class="siren siren-left"></div>
+    <div class="siren siren-right"></div>
+
+    <div class="lock-content">
+      <div class="big-lock">⛔</div>
+
+      <h2>Cofre Bloqueado</h2>
+
+      <p>
+        Muitas tentativas incorretas foram detectadas.
+      </p>
+
+      <div class="countdown">
+        Aguarde <strong id="countdownText">15</strong>s
+      </div>
+    </div>
+  </section>
+
+  <script src="script.js"></script>
+</body>
+</html>
